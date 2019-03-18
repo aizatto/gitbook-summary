@@ -12,6 +12,12 @@ provider:
   memorySize: 128
   tags:
     projects: gitbook-summary
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - "arn:aws:ssm:${self:provider.region}:*:parameter/GITHUB_ACCESS_TOKEN"
 
 resources:
   Resources:

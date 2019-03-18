@@ -204,11 +204,16 @@ const bodyJSON = `{
 
 test('process', async () => {
   const event = {
-    'X-GitHub-Event': 'push',
+    headers: {
+      'X-GitHub-Event': 'push',
+    },
     body: bodyJSON,
   };
 
-  const response = await webhook(event);
-
-  console.log(response);
+  expect.assertions(1);
+  try {
+    await webhook(event);
+  } catch (e) {
+    expect(e).toEqual(new Error('Test Environment'));
+  }
 });

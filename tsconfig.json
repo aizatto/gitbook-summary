@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
     "target": "es2017",
+    "module": "commonjs",
     "outDir": "build",
     "sourceMap": true,
-    "moduleResolution": "node",
-    "lib": [
-      "es2017"
-    ]
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*"
