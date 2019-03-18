@@ -1,0 +1,29 @@
+service: gitbook-summary
+
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ap-southeast-1
+  timeout: 30
+  memorySize: 128
+  tags:
+    projects: gitbook-summary
+
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${self:service}-${self:provider.stage}
+
+functions:
+  webhook:
+    handler: src/handler.webhook
+    events:
+      - http:
+          path: /
+          method: post
