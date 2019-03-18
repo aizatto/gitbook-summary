@@ -6,51 +6,26 @@ export function detect(line: string) {
   return line.match(REGEX);
 }
 
-function printDivider(columnLengths: Map<number, number>) {
-  const output = Array.from(columnLengths.values()).map(targetLength => {
-    return "-".repeat(targetLength);
-  });
-
-  return `|-${output.join(`-|-`)}-|`;
+function printRow(row: string[]): string {
+  return `| ${row.join(` | `)} |`;
 }
 
-function printRow(row: string[], columnLengths: Map<number, number>): string {
-  const output = [];
-
-  row.forEach((column, index) => {
-    const targetLength = columnLengths.get(index);
-    output.push(column.padEnd(targetLength, " "));
-  });
-
-  return `| ${output.join(` | `)} |`;
+function printDivider(columns: number) {
+  const output = new Array(columns).fill(":---", 0, columns);
+  return printRow(output);
 }
 
 function renderTable(rows: any[]) {
-  const columnLengths = new Map();
-
-  const headers = [
-    'Name',
-    'GitHub',
-    'GitBook',
-    'Page',
-  ];
-
-  rows.forEach(row => {
-    row.forEach((column, index) => {
-      const currentColumnLength = columnLengths.get(index) || 0;
-      const length = Math.max(column.length, currentColumnLength);
-      columnLengths.set(index, length);
-    });
-  });
+  const headers = ["Name", "GitHub", "GitBook", "Page"];
 
   const lines = [];
 
-  lines.push(printRow(headers, columnLengths));
+  lines.push(printRow(headers));
 
-  lines.push(printDivider(columnLengths));
+  lines.push(printDivider(headers.length));
 
   rows.forEach(row => {
-    lines.push(printRow(row, columnLengths));
+    lines.push(printRow(row));
   });
 
   return lines.join("\n");
@@ -61,7 +36,7 @@ export function convert(input: string): string {
   let output = "";
   let pos = 0;
   let endPos = 0;
-  const {length} = input;
+  const { length } = input;
 
   let currentDepth = 0;
   let depthCounters = new Map();
@@ -77,7 +52,7 @@ export function convert(input: string): string {
     const match = line.match(REGEX);
     if (match === null) {
       if (rows.length) {
-        output += `${renderTable(rows)  }\n`;
+        output += `${renderTable(rows)}\n`;
         currentDepth = 0;
         depthCounters = new Map();
         rows = [];
@@ -86,12 +61,7 @@ export function convert(input: string): string {
       continue;
     }
 
-    const [
-      ,
-      spaces,
-      name,
-      link
-    ] = match;
+    const [, spaces, name, link] = match;
 
     const depth = spaces.length / 2;
 
@@ -119,10 +89,10 @@ export function convert(input: string): string {
     page += 1;
 
     rows.push([
-      `\`${  list.reverse().join('.')  }\` ${  name}`,
+      `\`${list.reverse().join(".")}\` ${name}`,
       `[GitHub](${GITHUB_PREFIX + link})`,
       `[GitBook](${GITBOOK_PREFIX + link})`,
-      `\`${  page  }\``,
+      `\`${page}\``
     ]);
   }
 

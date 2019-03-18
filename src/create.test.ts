@@ -1,5 +1,5 @@
 /* eslint-env jest/globals */
-import { detect, convert } from './create';
+import { detect, convert } from "./create";
 
 const text = `
 # Table of contents
@@ -85,15 +85,15 @@ const text = `
   * [xargs](notes/archive/xargs.md)
 `;
 
-test('Summarize', (): void => {
+test("Summarize", (): void => {
   //  console.log(detect('# Table of contents'));
   //  console.log(detect('* [AWS](notes/aws/README.md)'));
-  expect(Array.from(detect('  * [Cognito](notes/aws/cognito.md)'))).toEqual([
-    '  * [Cognito](notes/aws/cognito.md)',
-    '  ',
-    'Cognito',
-    'notes/aws/cognito.md',
+  expect(Array.from(detect("  * [Cognito](notes/aws/cognito.md)"))).toEqual([
+    "  * [Cognito](notes/aws/cognito.md)",
+    "  ",
+    "Cognito",
+    "notes/aws/cognito.md"
   ]);
 
-  //  convert(text);
+  convert(text);
 });
