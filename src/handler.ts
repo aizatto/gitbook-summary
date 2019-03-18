@@ -1,6 +1,6 @@
 // https://developer.github.com/v3/repos/contents/#get-contents
 
-import * as fetch from "node-fetch";
+import fetch from "node-fetch";
 import * as atob from "atob";
 import * as btoa from "btoa";
 import { SSM } from "aws-sdk";
@@ -69,9 +69,9 @@ function replace(summary, toc) {
   return `${toc.slice(0, pos)}#${summaryAfter}`;
 }
 
-async function updateTOC(event): Promise<string | null> {
-  if (event["X-GitHub-Event"] !== "push") {
-    return null;
+async function updateTOC(event): Promise<string> {
+  if (event.headers["X-GitHub-Event"] !== "push") {
+    throw new Error("Not GitHub push event");
   }
 
   // TODO what is the best way to cache/memoize this
@@ -86,7 +86,7 @@ async function updateTOC(event): Promise<string | null> {
   );
 
   if (!modified) {
-    return null;
+    throw new Error("SUMMARY.md is not modified");
   }
 
   const [summaryContent, tocResponse] = await Promise.all([
@@ -97,7 +97,7 @@ async function updateTOC(event): Promise<string | null> {
   ]);
 
   if (!summaryContent) {
-    return null;
+    throw new Error("Cannot download SUMMARY.md");
   }
 
   const { sha: tocSHA, content: tocBase64Content } = JSON.parse(tocResponse);
@@ -106,11 +106,11 @@ async function updateTOC(event): Promise<string | null> {
 
   const updatedTocContent = replace(summaryContent, tocContent);
   if (updatedTocContent === tocContent) {
-    return null;
+    throw new Error("No changes in TOC");
   }
 
   if (process.env.NODE_ENV === "test") {
-    return null;
+    throw new Error("Test Environment");
   }
 
   const url = getApiGitHubURL({ owner, repo, path: "table-of-contents.md" });
@@ -129,10 +129,21 @@ async function updateTOC(event): Promise<string | null> {
 }
 
 export async function webhook(event) {
-  const result = await updateTOC(event);
+  try {
+    const result = await updateTOC(event);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result)
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV === "test") {
+      throw error;
+    }
 
-  return {
-    statusCode: 200,
-    result
-  };
+    console.error(error);
+    return {
+      statusCode: 200,
+      body: error.message
+    };
+  }
 }
