@@ -86,12 +86,16 @@ async function updateTOC(event): Promise<string> {
     throw new Error("SUMMARY.md is not modified");
   }
 
-  return update({ owner, repo});
+  return update({ owner, repo });
 }
 
-export async function update(
-  {owner, repo}: { owner: string, repo: string}
-): Promise<string> {
+export async function update({
+  owner,
+  repo
+}: {
+  owner: string;
+  repo: string;
+}): Promise<string> {
   // TODO what is the best way to cache/memoize this
   GITHUB_ACCESS_TOKEN = await getGitHubAccessToken();
 

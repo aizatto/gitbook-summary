@@ -1,6 +1,7 @@
 const REGEX = /(\s*)\*\s+\[([^]+)]\(([^)]+)\)/;
 const GITHUB_PREFIX = "https://github.com/aizatto/gitbook-public/blob/master/";
-const GITBOOK_PREFIX = "https://www.aizatto.com/";
+const AIZATTO_DOT_COM_PREFIX = "https://www.aizatto.com/";
+const GITBOOK_PREFIX = "https://app.gitbook.com/@aizatto/s/public/";
 
 export function detect(line: string) {
   return line.match(REGEX);
@@ -16,7 +17,7 @@ function printDivider(columns: number) {
 }
 
 function renderTable(rows: any[]) {
-  const headers = ["Name", "GitHub", "GitBook", "Page"];
+  const headers = ["Name", "aizatto.com", "GitHub", "GitBook", "Page"];
 
   const lines = [];
 
@@ -89,8 +90,8 @@ export function convert(input: string): string {
     page += 1;
 
     let gitbookPath = filename;
-    if (gitbookPath.substr(-9) === 'README.md') {
-      gitbookPath = gitbookPath.substr(0, gitbookPath.length - 9)
+    if (gitbookPath.substr(-9) === "README.md") {
+      gitbookPath = gitbookPath.substr(0, gitbookPath.length - 9);
     } else {
       // trim out file extension
       gitbookPath = gitbookPath.substr(0, gitbookPath.length - 3);
@@ -98,6 +99,7 @@ export function convert(input: string): string {
 
     rows.push([
       `\`${list.reverse().join(".")}\` ${name}`,
+      `[aizatto.com](${AIZATTO_DOT_COM_PREFIX + gitbookPath})`,
       `[GitHub](${GITHUB_PREFIX + filename})`,
       `[GitBook](${GITBOOK_PREFIX + gitbookPath})`,
       `\`${page}\``
