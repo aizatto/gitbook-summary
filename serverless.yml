@@ -33,3 +33,5 @@ functions:
       - http:
           path: /
           method: post
+  forceUpdate:
+    handler: src/handler.update

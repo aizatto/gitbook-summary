@@ -61,7 +61,7 @@ export function convert(input: string): string {
       continue;
     }
 
-    const [, spaces, name, link] = match;
+    const [, spaces, name, filename] = match;
 
     const depth = spaces.length / 2;
 
@@ -81,17 +81,25 @@ export function convert(input: string): string {
     depthCounters.set(depth, counter);
 
     const list = [];
-    for (let i = depth; i >= 0; i--) {
+    for (let i = depth; i >= 0; i -= 1) {
       const depthCurrentValue = depthCounters.get(i);
       list.push(depthCurrentValue);
     }
 
     page += 1;
 
+    let gitbookPath = filename;
+    if (gitbookPath.substr(-9) === 'README.md') {
+      gitbookPath = gitbookPath.substr(0, gitbookPath.length - 9)
+    } else {
+      // trim out file extension
+      gitbookPath = gitbookPath.substr(0, gitbookPath.length - 3);
+    }
+
     rows.push([
       `\`${list.reverse().join(".")}\` ${name}`,
-      `[GitHub](${GITHUB_PREFIX + link})`,
-      `[GitBook](${GITBOOK_PREFIX + link})`,
+      `[GitHub](${GITHUB_PREFIX + filename})`,
+      `[GitBook](${GITBOOK_PREFIX + gitbookPath})`,
       `\`${page}\``
     ]);
   }

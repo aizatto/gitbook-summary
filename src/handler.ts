@@ -74,9 +74,6 @@ async function updateTOC(event): Promise<string> {
     throw new Error("Not GitHub push event");
   }
 
-  // TODO what is the best way to cache/memoize this
-  GITHUB_ACCESS_TOKEN = await getGitHubAccessToken();
-
   const body = JSON.parse(event.body);
   const owner = body.repository.owner.name;
   const repo = body.repository.name;
@@ -88,6 +85,15 @@ async function updateTOC(event): Promise<string> {
   if (!modified) {
     throw new Error("SUMMARY.md is not modified");
   }
+
+  return update({ owner, repo});
+}
+
+export async function update(
+  {owner, repo}: { owner: string, repo: string}
+): Promise<string> {
+  // TODO what is the best way to cache/memoize this
+  GITHUB_ACCESS_TOKEN = await getGitHubAccessToken();
 
   const [summaryContent, tocResponse] = await Promise.all([
     fetchFromGitHub(getRawGitHubURL({ owner, repo, path: "SUMMARY.md" })),
