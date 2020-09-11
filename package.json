@@ -18,7 +18,7 @@
     "atob": "^2.1.2",
     "aws-sdk": "^2.422.0",
     "btoa": "^1.2.1",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "typescript": "^3.3.3333"
   },
   "devDependencies": {
